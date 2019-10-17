@@ -31,13 +31,24 @@ const UpdateForm = props => {
 
    
 
-    const changeHandler = ev => {
-        ev.persist();
-        let value = ev.target.value;
+    const changeHandler = e => {
+        e.persist();
+        let value = e.target.value;
         setMovie({
             ...movie,
-            [ev.target.name]: value
+            [e.target.name]: value
         })
+    }
+
+    const deleteMovie = e => {
+        e.preventDefault();
+        axios
+        .delete(`http://localhost:5000/api/movies${movie.id}`)
+        .then(res => {
+            console.log('res from deleteMovie', res)
+            props.history.push(`/`)
+        })
+        .catch(err => console.log(err))
     }
 
     const handleSubmit = e => {
@@ -46,9 +57,9 @@ const UpdateForm = props => {
         .put(`http://localhost:5000/api/movies/${movie.id}`, movie)
         .then(res => {
             console.log('response from axios PUT request', res)
-            props.setMovies(...props.movies, res.data)
+            props.setMovies([...props.movies, res.data])
             // setMovie(initialMovie)
-            props.history.push(`/movie-list/`)
+            props.history.push(`/`)
         })
         .catch(err => {
             console.log('No data', err)
@@ -87,7 +98,8 @@ const UpdateForm = props => {
                     onChange={changeHandler}
                     value={movie.stars}
                 />
-                <button type='submit'>Update</button>
+                <button>Update</button>
+                <button onCLick={deleteMovie}>Delete</button>
             </form>
         </div>
     )
